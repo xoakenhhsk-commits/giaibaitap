@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#0f0f1a" />
+    <title>Giải Bài Tập AI — Trợ Lý Học Tập Thông Minh</title>
+    <meta name="description" content="Giải bài tập ngay lập tức với AI. Hỗ trợ Toán, Lập trình, Vật lý, Hóa học và nhiều hơn nữa." />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+    <!-- highlight.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@14.0.0/marked.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ===== Header ===== -->
+    <header id="appHeader">
+        <div class="header-inner">
+            <div class="logo" id="logoSection">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#logoGrad)" />
+                        <path d="M8 12h16M8 16h12M8 20h14M22 20l3-4-3-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs><linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs>
+                    </svg>
+                </div>
+                <h1>Giải<span class="accent">BàiTập</span></h1>
+            </div>
+            <div class="header-actions">
+                <button id="historyToggle" class="btn-icon" title="Lịch sử" aria-label="Mở lịch sử">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                    <span class="badge" id="historyBadge" style="display:none">0</span>
+                </button>
+                <button id="themeToggle" class="btn-icon" title="Đổi giao diện">
+                    <svg id="sunIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                    <svg id="moonIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== Main ===== -->
+    <main id="mainContent">
+        <!-- Welcome Tips -->
+        <section class="tips-section" id="tipsSection">
+            <div class="tips-scroll">
+                <div class="tip-card glass-card">
+                    <span class="tip-emoji">⚡</span>
+                    <span>Nhấn <kbd>Ctrl+Enter</kbd> để gửi nhanh</span>
+                </div>
+                <div class="tip-card glass-card">
+                    <span class="tip-emoji">📸</span>
+                    <span>Hỗ trợ chụp ảnh bài tập</span>
+                </div>
+                <div class="tip-card glass-card">
+                    <span class="tip-emoji">🎯</span>
+                    <span>Chọn đúng môn học để có kết quả tốt nhất</span>
+                </div>
+                <div class="tip-card glass-card">
+                    <span class="tip-emoji">📋</span>
+                    <span>Bấm vào code để sao chép</span>
+                </div>
+                <div class="tip-card glass-card">
+                    <span class="tip-emoji">🌐</span>
+                    <span>AI tìm kiếm web để trả lời chính xác hơn</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Input Section -->
+        <section class="input-section" id="inputSection">
+            <div class="input-card glass-card">
+                <div class="input-header">
+                    <h2>Đặt Câu Hỏi</h2>
+                    <p class="subtitle">Nhập hoặc dán câu hỏi bài tập, AI sẽ giải chi tiết từng bước</p>
+                </div>
+
+                <!-- Subject Selector -->
+                <div class="subject-selector" id="subjectSelector">
+                    <button class="subject-chip active" data-subject="general"><span class="chip-icon">🎓</span> Tổng hợp</button>
+                    <button class="subject-chip" data-subject="math"><span class="chip-icon">📐</span> Toán</button>
+                    <button class="subject-chip" data-subject="programming"><span class="chip-icon">💻</span> Lập trình</button>
+                    <button class="subject-chip" data-subject="physics"><span class="chip-icon">⚛️</span> Vật lý</button>
+                    <button class="subject-chip" data-subject="chemistry"><span class="chip-icon">🧪</span> Hóa học</button>
+                    <button class="subject-chip" data-subject="biology"><span class="chip-icon">🧬</span> Sinh học</button>
+                    <button class="subject-chip" data-subject="history"><span class="chip-icon">📜</span> Lịch sử</button>
+                    <button class="subject-chip" data-subject="literature"><span class="chip-icon">📖</span> Văn học</button>
+                    <button class="subject-chip" data-subject="english"><span class="chip-icon">🌍</span> Tiếng Anh</button>
+                    <button class="subject-chip" data-subject="geography"><span class="chip-icon">🗺️</span> Địa lý</button>
+                </div>
+
+                <!-- Image Upload Area -->
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none" />
+                    <button class="btn-upload" id="uploadBtn" title="Tải ảnh bài tập">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        Tải ảnh bài tập
+                    </button>
+                    <div class="image-preview" id="imagePreview" style="display:none">
+                        <img id="previewImg" alt="Ảnh bài tập" />
+                        <button class="btn-remove-img" id="removeImage" title="Xóa ảnh">✕</button>
+                    </div>
+                </div>
+
+                <!-- Textarea -->
+                <div class="textarea-wrapper">
+                    <textarea id="questionInput" placeholder="Nhập câu hỏi bài tập tại đây...&#10;&#10;Ví dụ:&#10;• Giải phương trình x² + 5x + 6 = 0&#10;• Viết chương trình Python tìm số nguyên tố&#10;• Giải thích định luật III Newton" rows="5"></textarea>
+                    <div class="textarea-footer">
+                        <span class="char-count" id="charCount">0 ký tự</span>
+                        <div class="textarea-actions">
+                            <button class="btn-clear" id="clearInput" title="Xóa nội dung">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Model Selector -->
+                <div class="model-selector">
+                    <label for="modelSelect">Mô hình AI:</label>
+                    <select id="modelSelect">
+                        <option value="openrouter/free">Tự động chọn (Miễn phí)</option>
+                        <option value="google/gemma-4-31b">Google Gemma 4 31B (Miễn phí)</option>
+                        <option value="deepseek/deepseek-v4-flash">DeepSeek V4 Flash</option>
+                        <option value="openai/gpt-oss-120b">OpenAI GPT-OSS 120B</option>
+                    </select>
+                </div>
+
+                <!-- Web Search Toggle -->
+                <div class="search-toggle">
+                    <label class="toggle-label" for="webSearchToggle">
+                        <input type="checkbox" id="webSearchToggle" checked />
+                        <span class="toggle-switch"></span>
+                        <span class="toggle-text">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            Tìm kiếm web trước khi trả lời
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Submit -->
+                <button id="solveBtn" class="btn-solve" type="button">
+                    <span class="btn-text">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        Giải Bài Tập
+                    </span>
+                    <span class="btn-loading" style="display:none">
+                        <div class="spinner"></div>
+                        Đang suy nghĩ...
+                    </span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Answer Section -->
+        <section class="answer-section" id="answerSection" style="display:none">
+            <div class="answer-card glass-card">
+                <div class="answer-header">
+                    <div class="answer-title-row">
+                        <h2>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            Lời Giải
+                        </h2>
+                        <div class="answer-actions">
+                            <button class="btn-sm" id="bookmarkBtn" title="Lưu lại">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                                Lưu
+                            </button>
+                            <button class="btn-sm" id="copyAllBtn" title="Sao chép toàn bộ">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                Sao chép
+                            </button>
+                            <button class="btn-sm" id="newQuestionBtn" title="Câu hỏi mới">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Hỏi tiếp
+                            </button>
+                        </div>
+                    </div>
+                    <div class="answer-meta" id="answerMeta"></div>
+                </div>
+                <div class="answer-body" id="answerBody"></div>
+                <!-- Rating -->
+                <div class="answer-rating" id="answerRating">
+                    <span>Đánh giá câu trả lời:</span>
+                    <div class="rating-stars">
+                        <button class="star-btn" data-rating="1">⭐</button>
+                        <button class="star-btn" data-rating="2">⭐</button>
+                        <button class="star-btn" data-rating="3">⭐</button>
+                        <button class="star-btn" data-rating="4">⭐</button>
+                        <button class="star-btn" data-rating="5">⭐</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <section class="error-section" id="errorSection" style="display:none">
+            <div class="error-card glass-card">
+                <div class="error-icon">⚠️</div>
+                <h3>Đã xảy ra lỗi</h3>
+                <p id="errorMessage"></p>
+                <button class="btn-solve btn-retry" id="retryBtn">Thử Lại</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== Bottom Navigation (Mobile) ===== -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" data-tab="home" id="navHome">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Trang chủ</span>
+        </button>
+        <button class="nav-item" data-tab="history" id="navHistory">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            <span>Lịch sử</span>
+        </button>
+        <button class="nav-item" data-tab="bookmarks" id="navBookmarks">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            <span>Đã lưu</span>
+        </button>
+        <button class="nav-item" data-tab="settings" id="navSettings">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Cài đặt</span>
+        </button>
+    </nav>
+
+    <!-- ===== History Sidebar ===== -->
+    <aside id="historySidebar" class="history-sidebar">
+        <div class="sidebar-header">
+            <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg> Lịch Sử</h3>
+            <div class="sidebar-actions">
+                <button class="btn-sm" id="clearHistoryBtn">Xóa tất cả</button>
+                <button class="btn-icon btn-close-sidebar" id="closeSidebar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+        </div>
+        <div class="sidebar-search">
+            <input type="text" id="historySearch" placeholder="Tìm kiếm câu hỏi..." />
+        </div>
+        <div class="sidebar-body" id="historyList">
+            <div class="empty-history" id="emptyHistory">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <p>Chưa có câu hỏi nào</p>
+                <span>Câu hỏi đã giải sẽ xuất hiện tại đây</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== Bookmarks Sidebar ===== -->
+    <aside id="bookmarksSidebar" class="history-sidebar bookmarks-sidebar">
+        <div class="sidebar-header">
+            <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Đã Lưu</h3>
+            <div class="sidebar-actions">
+                <button class="btn-icon btn-close-sidebar" id="closeBookmarks"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+        </div>
+        <div class="sidebar-body" id="bookmarksList">
+            <div class="empty-history" id="emptyBookmarks">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                <p>Chưa lưu câu trả lời nào</p>
+                <span>Bấm "Lưu" để giữ lại lời giải hay</span>
+            </div>
+        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
